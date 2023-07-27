@@ -50,8 +50,8 @@ async def test_delete_user(client, create_user_in_database, get_user_from_databa
 async def test_get_user(client, create_user_in_database, get_user_from_database):
     user_data = {
         "user_id": uuid.uuid4(),
-        "nickname": "Ababa",
-        "email": "ababa@gmail.com",
+        "nickname": "Aboba",
+        "email": "aboba@gmail.com",
         "is_active": True,
     }
     await create_user_in_database(**user_data)
