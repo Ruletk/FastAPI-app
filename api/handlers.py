@@ -3,7 +3,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Union
 from uuid import UUID
 
-from api.models import UserCreate, ShowUser, DeleteUserResponse
+from api.models import (
+    UserCreate,
+    ShowUser,
+    DeleteUserResponse,
+    UpdatedUserResponse,
+    UpdateUserRequest,
+)
 from db.dals import UserDAL
 from db.session import get_db
 
@@ -46,6 +52,14 @@ async def _get_user_by_id(user_id, db) -> Union[ShowUser, None]:
                 )
 
 
+async def _update_user(updated: dict, user_id: UUID, db) -> Union[UUID, None]:
+    async with db as session:
+        async with session.begin():
+            user_dal = UserDAL(session)
+            updated_user = user_dal.update_user(user_id=user_id, **updated)
+            return updated_user
+
+
 @user_router.post("/", response_model=ShowUser)
 async def create_user(body: UserCreate, db: AsyncSession = Depends(get_db)) -> ShowUser:
     return await _create_new_user(body=body, db=db)
@@ -67,3 +81,20 @@ async def get_user_by_id(user_id: UUID, db: AsyncSession = Depends(get_db)) -> S
     if user is None:
         raise HTTPException(status_code=404, detail=f"User with id {user_id} not found")
     return user
+
+
+@user_router.patch("/", response_model=UpdatedUserResponse)
+async def update_user_by_id(
+    user_id: UUID, body: UpdateUserRequest, db: AsyncSession = Depends(get_db)
+) -> UpdatedUserResponse:
+    update_params = body.dict(exclude_none=True)
+    if update_params == {}:
+        raise HTTPException(
+            status_code=422,
+            detail="At least one parameter for user update info should be provided",
+        )
+    user = await _get_user_by_id(user_id, db)
+    if user is None:
+        raise HTTPException(status_code=404, detail=f"User with id {user_id} not found")
+    updated_user_id = await _update_user(updated=update_params, user_id=user_id, db=db)
+    return UpdatedUserResponse(updated_user_id=updated_user_id)
