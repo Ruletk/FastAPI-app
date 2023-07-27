@@ -2,5 +2,8 @@ __pycache__
 .venv
 .pytest_cache
 tests/alembic/*
-!tests/alembic/alembic.ini
-migrations
+!tests/alembic/env.py
+!tests/alembic/script.py.mako
+migrations/*
+!migrations/env.py
+!migrations/script.py.mako
