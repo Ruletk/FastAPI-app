@@ -43,5 +43,5 @@ async def delete_user(
 ) -> DeleteUserResponse:
     deleted_user_id = await _delete_user(user_id=user_id, db=db)
     if deleted_user_id is None:
-        return HTTPException(404, detail=f"User with id {user_id} not found")
+        raise HTTPException(status_code=404, detail=f"User with id {user_id} not found")
     return DeleteUserResponse(deleted_user_id=deleted_user_id)

@@ -37,5 +37,5 @@ class UserCreate(BaseModel):
         return value
 
 
-class DeleteUserResponse(TunedModel):
+class DeleteUserResponse(BaseModel):
     deleted_user_id: uuid.UUID
