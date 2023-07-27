@@ -56,7 +56,7 @@ async def _update_user(updated: dict, user_id: UUID, db) -> Union[UUID, None]:
     async with db as session:
         async with session.begin():
             user_dal = UserDAL(session)
-            updated_user = user_dal.update_user(user_id=user_id, **updated)
+            updated_user = await user_dal.update_user(user_id=user_id, **updated)
             return updated_user
 
 

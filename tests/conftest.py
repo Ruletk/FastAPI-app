@@ -50,19 +50,16 @@ async def clean_tables(async_session_test):
 
 
 async def _get_test_db():
-    try:
-        test_engine = create_async_engine(
-            settings.TEST_DATABASE_URL, future=True, echo=True
-        )
+    test_engine = create_async_engine(
+        settings.TEST_DATABASE_URL, future=True, echo=True
+    )
 
-        # create session for the interaction with database
-        test_async_session = sessionmaker(
-            test_engine, expire_on_commit=False, class_=AsyncSession
-        )
+    test_async_session = sessionmaker(
+        test_engine, expire_on_commit=False, class_=AsyncSession
+    )
 
-        yield test_async_session()
-    finally:
-        pass
+    async with test_async_session() as session:
+        yield session
 
 
 @pytest.fixture(scope="function")
@@ -79,11 +76,9 @@ async def client() -> Generator[TestClient, Any, None]:
 
 @pytest.fixture(scope="session")
 async def asyncpg_pool():
-    pool = await asyncpg.create_pool(
-        "".join(settings.TEST_DATABASE_URL.split("+asyncpg"))
-    )
-    yield pool
-    await pool.close()
+    url = settings.TEST_DATABASE_URL.replace("+asyncpg", "")
+    async with await asyncpg.create_pool(url) as pool:
+        yield pool
 
 
 @pytest.fixture
