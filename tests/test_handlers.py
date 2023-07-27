@@ -15,12 +15,12 @@ async def test_create_user(client, get_user_from_database):
     assert data_from_response["is_active"] is True
 
     users_from_db = await get_user_from_database(data_from_response["user_id"])
-    assert len(users_from_db) == 1
-    users_from_db = dict(users_from_db[0])
-    assert users_from_db["nickname"] == user_data["nickname"]
-    assert users_from_db["email"] == user_data["email"]
-    assert users_from_db["is_active"] is True
-    assert str(users_from_db["user_id"]) == data_from_response["user_id"]
+    assert len(user_from_db) == 1
+    user_from_db = dict(users_from_db[0])
+    assert user_from_db["nickname"] == user_data["nickname"]
+    assert user_from_db["email"] == user_data["email"]
+    assert user_from_db["is_active"] is True
+    assert str(user_from_db["user_id"]) == data_from_response["user_id"]
 
 
 async def test_delete_user(client, create_user_in_database, get_user_from_database):
@@ -45,3 +45,24 @@ async def test_delete_user(client, create_user_in_database, get_user_from_databa
 
     resp = client.delete(f"/user/?user_id={user_data['user_id']}")
     assert resp.status_code == 404
+
+
+async def test_get_user(client, create_user_in_database, get_user_from_database):
+    user_data = {
+        "user_id": uuid.uuid4(),
+        "nickname": "Ababa",
+        "email": "ababa@gmail.com",
+        "is_active": True,
+    }
+    await create_user_in_database(**user_data)
+    resp = client.get(f"/user/?user_id={user_data['user_id']}")
+    assert resp.status_code == 200
+    data = resp.json()
+
+    users_from_db = await get_user_from_database(user_data["user_id"])
+    assert len(users_from_db) == 1
+
+    assert user_data["nickname"] == data["nickname"]
+    assert user_data["email"] == data["email"]
+    assert user_data["is_active"] == data["is_active"]
+    assert str(user_data["user_id"]) == str(data["user_id"])
