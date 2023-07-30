@@ -1,16 +1,17 @@
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.exc import IntegrityError
 from typing import Union
 from uuid import UUID
 
-from api.models import (
-    UserCreate,
-    ShowUser,
-    DeleteUserResponse,
-    UpdatedUserResponse,
-    UpdateUserRequest,
-)
+from fastapi import APIRouter
+from fastapi import Depends
+from fastapi import HTTPException
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from api.models import DeleteUserResponse
+from api.models import ShowUser
+from api.models import UpdatedUserResponse
+from api.models import UpdateUserRequest
+from api.models import UserCreate
 from db.dals import UserDAL
 from db.session import get_db
 

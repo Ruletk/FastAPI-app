@@ -1,5 +1,4 @@
 import uuid
-import json
 
 
 async def test_get_user(client, create_user_in_database, get_user_from_database):

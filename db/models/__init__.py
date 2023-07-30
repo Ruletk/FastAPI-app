@@ -1,5 +1,5 @@
-from sqlalchemy.orm import declarative_base
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import declarative_base
 
 
 Base = declarative_base()
@@ -35,4 +35,4 @@ class BaseModel(Base):
         return {key: getattr(self, key, None) for key in self.json_attributes}
 
 
-from . import user
+from . import user  # noqa F401
