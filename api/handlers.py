@@ -98,8 +98,15 @@ async def update_user_by_id(
             status_code=422,
             detail="At least one parameter for user update info should be provided",
         )
-    user = await _get_user_by_id(user_id, db)
-    if user is None:
-        raise HTTPException(status_code=404, detail=f"User with id {user_id} not found")
-    updated_user_id = await _update_user(updated=update_params, user_id=user_id, db=db)
-    return UpdatedUserResponse(updated_user_id=updated_user_id.user_id)
+    try:
+        user = await _get_user_by_id(user_id, db)
+        if user is None:
+            raise HTTPException(
+                status_code=404, detail=f"User with id {user_id} not found"
+            )
+        updated_user_id = await _update_user(
+            updated=update_params, user_id=user_id, db=db
+        )
+        return UpdatedUserResponse(updated_user_id=updated_user_id.user_id)
+    except IntegrityError as err:
+        raise HTTPException(status_code=503, detail=f"Database error: {err}")
