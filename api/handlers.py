@@ -102,4 +102,4 @@ async def update_user_by_id(
     if user is None:
         raise HTTPException(status_code=404, detail=f"User with id {user_id} not found")
     updated_user_id = await _update_user(updated=update_params, user_id=user_id, db=db)
-    return UpdatedUserResponse(updated_user_id=updated_user_id)
+    return UpdatedUserResponse(updated_user_id=updated_user_id.user_id)

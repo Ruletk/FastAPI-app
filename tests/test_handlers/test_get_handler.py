@@ -28,3 +28,19 @@ async def test_unknown_users(client):
         user_id = uuid.uuid4()
         res = client.get(f"/user/?user_id={user_id}")
         assert res.status_code == 404
+
+
+async def test_not_uuid(client):
+    user_id = "ghjdfghjhgfghjkdfgdhjkhdfgjkhjkdgfhjkdgfhjk"
+    res = client.get(f"/user/?user_id={user_id}")
+    data = res.json()
+    assert res.status_code == 422
+    assert data == {
+        "detail": [
+            {
+                "loc": ["query", "user_id"],
+                "msg": "value is not a valid uuid",
+                "type": "type_error.uuid",
+            }
+        ]
+    }

@@ -30,3 +30,19 @@ async def test_delete_unknown_user(client):
     user_id = uuid.uuid4()
     res = client.delete(f"/user/?user_id={user_id}")
     assert res.status_code == 404
+
+
+async def test_delete_not_uuid_identificator(client):
+    user_id = "dfghdfjdfjghjhkdfghjkdfg"
+    res = client.delete(f"/user/?user_id={user_id}")
+    data = res.json()
+    assert res.status_code == 422
+    assert data == {
+        "detail": [
+            {
+                "loc": ["query", "user_id"],
+                "msg": "value is not a valid uuid",
+                "type": "type_error.uuid",
+            }
+        ]
+    }
