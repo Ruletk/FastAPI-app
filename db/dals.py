@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from uuid import UUID
 from sqlalchemy import update, and_, select
 
-from db.models import User
+from db.models.user import User
 
 
 class UserDAL:
@@ -16,24 +16,23 @@ class UserDAL:
         await self.db_session.flush()
         return new_user
 
-    async def delete_user(self, user_id: UUID) -> Union[UUID, None]:
-        query = (
-            update(User)
-            .where(and_(User.user_id == user_id, User.is_active == True))
-            .values(is_active=False)
-            .returning(User.user_id)
-        )
-        res = await self.db_session.execute(query)
-        deleted_user_id_row = res.fetchone()
-        if deleted_user_id_row is not None:
-            return deleted_user_id_row[0]
+    async def delete_user(self, user_id: UUID) -> Union[User, None]:
+        user = await self.get_user_by_id(user_id)
+        if user is not None and user.is_active:
+            user.delete(self.db_session)
+            return user
 
     async def get_user_by_id(self, user_id: UUID) -> Union[User, None]:
-        query = select(User).where(User.user_id == user_id)
-        res = await self.db_session.execute(query)
-        user = res.fetchone()
-        if user is not None:
-            return user[0]
+        stmt = select(User).where(User.user_id == user_id)
+        return await self._get_user(stmt)
+
+    async def get_user_by_nickname(self, nickname: str) -> Union[UUID, None]:
+        stmt = select(User).where(User.nickname == nickname)
+        return await self._get_user(stmt)
+
+    async def get_user_by_email(self, email: str) -> Union[UUID, None]:
+        stmt = select(User).where(User.email == email)
+        return await self._get_user(stmt)
 
     async def update_user(self, user_id: UUID, **kwargs) -> Union[UUID, None]:
         query = (
@@ -46,3 +45,8 @@ class UserDAL:
         user = res.fetchone()
         if user is not None:
             return user[0]
+
+    async def _get_user(self, stmt) -> Union[UUID, None]:
+        user = await self.db_session.scalar(stmt)
+        if user is not None:
+            return user

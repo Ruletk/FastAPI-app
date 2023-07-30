@@ -6,7 +6,7 @@ from fastapi import HTTPException
 from pydantic import BaseModel, EmailStr, validator, constr
 
 
-LETTER_MATCH_PATTERN = re.compile(r"^[A-Za-z][A-Za-z0-9]+$")
+LETTER_MATCH_PATTERN = re.compile(r"^[A-Za-z][A-Za-z0-9_-]+$")
 
 
 class TunedModel(BaseModel):
@@ -31,9 +31,12 @@ class UserCreate(BaseModel):
             raise HTTPException(
                 status_code=422, detail="Nickname should contain 3 or more characters"
             )
+        if len(value) > 120:
+            raise HTTPException(status_code=422, detail="Nickname should ")
         if not LETTER_MATCH_PATTERN.match(value):
             raise HTTPException(
-                status_code=422, detail="Nickname should contain only letters"
+                status_code=422,
+                detail="Nickname should start with a letter and contain only letters, numbers and underscores",
             )
         return value
 

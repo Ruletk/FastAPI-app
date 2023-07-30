@@ -1,14 +1,14 @@
 import uuid
 from sqlalchemy import Column, String, Boolean
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import declarative_base
+
+from . import BaseModel
 
 
-Base = declarative_base()
-
-
-class User(Base):
+class User(BaseModel):
     __tablename__ = "users"
+    json_attributes = ("user_id", "username", "nickname", "email", "is_active")
+
     user_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     nickname = Column(String, nullable=False, unique=True, index=True)
     email = Column(String, nullable=False, unique=True, index=True)

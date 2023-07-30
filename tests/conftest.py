@@ -2,6 +2,7 @@ from typing import Generator, Any
 import pytest
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.sql import text as sa_text
 from starlette.testclient import TestClient
 from main import app
 import os
@@ -46,7 +47,9 @@ async def clean_tables(async_session_test):
     async with async_session_test() as session:
         async with session.begin():
             for table_for_cleaning in CLEAN_TABLES:
-                await session.execute(f"""TRUNCATE TABLE {table_for_cleaning};""")
+                await session.execute(
+                    sa_text(f"""TRUNCATE TABLE {table_for_cleaning};""")
+                )
 
 
 async def _get_test_db():
@@ -58,8 +61,7 @@ async def _get_test_db():
         test_engine, expire_on_commit=False, class_=AsyncSession
     )
 
-    async with test_async_session() as session:
-        yield session
+    yield test_async_session()
 
 
 @pytest.fixture(scope="function")

@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.exc import IntegrityError
 from typing import Union
 from uuid import UUID
 
@@ -34,8 +35,9 @@ async def _delete_user(user_id, db) -> Union[UUID, None]:
     async with db as session:
         async with session.begin():
             user_dal = UserDAL(session)
-            deleted_user_id = await user_dal.delete_user(user_id=user_id)
-            return deleted_user_id
+            deleted_user = await user_dal.delete_user(user_id=user_id)
+            if deleted_user:
+                return deleted_user.user_id
 
 
 async def _get_user_by_id(user_id, db) -> Union[ShowUser, None]:
@@ -62,7 +64,10 @@ async def _update_user(updated: dict, user_id: UUID, db) -> Union[UUID, None]:
 
 @user_router.post("/", response_model=ShowUser)
 async def create_user(body: UserCreate, db: AsyncSession = Depends(get_db)) -> ShowUser:
-    return await _create_new_user(body=body, db=db)
+    try:
+        return await _create_new_user(body=body, db=db)
+    except IntegrityError as err:
+        raise HTTPException(status_code=503, detail=f"Database error: {err}")
 
 
 @user_router.delete("/", response_model=DeleteUserResponse)
