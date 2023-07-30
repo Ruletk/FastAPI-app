@@ -1,16 +1,19 @@
-from typing import Generator, Any
+import asyncio
+import os
+from typing import Any
+from typing import Generator
+
+import asyncpg
 import pytest
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.sql import text as sa_text
 from starlette.testclient import TestClient
-from main import app
-import os
-from db.models import Base
+
 import settings
-import asyncio
 from db.session import get_db
-import asyncpg
+from main import app
 
 
 CLEAN_TABLES = [

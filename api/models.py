@@ -1,9 +1,12 @@
 import re
 import uuid
-
 from typing import Optional
+
 from fastapi import HTTPException
-from pydantic import BaseModel, EmailStr, validator, constr
+from pydantic import BaseModel
+from pydantic import constr
+from pydantic import EmailStr
+from pydantic import validator
 
 
 LETTER_MATCH_PATTERN = re.compile(r"^[A-Za-z][A-Za-z0-9_-]+$")

@@ -1,5 +1,5 @@
-import uuid
 import json
+import uuid
 
 
 async def test_update_user(client, create_user_in_database, get_user_from_database):

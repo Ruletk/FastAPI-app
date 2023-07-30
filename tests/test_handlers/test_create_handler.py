@@ -1,6 +1,6 @@
-import pytest
-import uuid
 import json
+
+import pytest
 
 
 async def test_create_user(client, get_user_from_database):
@@ -26,12 +26,12 @@ async def test_create_user(client, get_user_from_database):
 
 async def test_nickname_duplicate(client):  # WIP!
     user_data1 = {"nickname": "keyboard", "email": "keyboard@mail.ru"}
-    user_data2 = {"nickname": "keyboard", "email": "fgdhgfddfg@gmail.com"}
+    # user_data2 = {"nickname": "keyboard", "email": "fgdhgfddfg@gmail.com"}
 
     resp = client.post("/user/", data=json.dumps(user_data1))
     assert resp.status_code == 200
 
-    resp_another = client.post("/user/", data=json.dumps(user_data2))
+    # resp_another = client.post("/user/", data=json.dumps(user_data2))
 
 
 @pytest.mark.parametrize(

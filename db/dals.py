@@ -1,8 +1,8 @@
-import json
 from typing import Union
-from sqlalchemy.ext.asyncio import AsyncSession
 from uuid import UUID
-from sqlalchemy import update, and_, select
+
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from db.models.user import User
 

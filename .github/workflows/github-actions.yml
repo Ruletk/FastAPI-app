@@ -1,6 +1,6 @@
 name: Python Tests
 
-on: 
+on:
     push:
         branches:
             - master
@@ -43,4 +43,3 @@ jobs:
             - name: Test with pytest
               run: |
                 pytest
-            
